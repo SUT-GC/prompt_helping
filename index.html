@@ -547,25 +547,16 @@
 
         <!-- 配置区 -->
         <div class="config-section">
-            <!-- 代理服务器配置 -->
+            <!-- 模型选择 -->
             <div class="config-card">
                 <div class="config-header">
-                    <span class="status-dot" id="proxyStatus"></span>
-                    <h3>🖥️ 代理服务器</h3>
+                    <h3>🤖 模型选择</h3>
                 </div>
                 <div class="input-group">
-                    <input 
-                        type="text" 
-                        class="config-input" 
-                        id="proxyUrl" 
-                        value="http://localhost:3000"
-                        placeholder="http://localhost:3000"
-                    >
-                    <button class="btn btn-secondary btn-small" onclick="testProxy()">
-                        🔗 测试
-                    </button>
+                    <select class="config-input" id="modelSelect">
+                        <option value="doubao-seed-1-6-251015" selected>豆包 Seed 1.6</option>
+                    </select>
                 </div>
-                <p class="help-tip">先启动后端服务: <code>python server.py</code></p>
             </div>
 
             <!-- API Key 配置 -->
@@ -588,7 +579,6 @@
                         ✓ 验证
                     </button>
                 </div>
-                <p class="help-tip">API Key 将通过代理服务器安全转发</p>
             </div>
         </div>
 
@@ -662,13 +652,8 @@
         <div class="instructions">
             <h3>📖 快速开始</h3>
             <ol>
-                <li>启动后端代理服务：
-                    <pre>python server.py</pre>
-                </li>
-                <li>在浏览器打开此 HTML 文件</li>
-                <li>点击「测试」验证代理服务器已启动</li>
-                <li>输入你的 <code>API Key</code></li>
-                <li>选择输出类型（图像/视频/信息图表等）</li>
+                <li>选择模型，输入 API Key 并点击「验证」</li>
+                <li>选择输出类型（图像/信息图表/代码架构）</li>
                 <li>在左侧文本框粘贴你的自然语言描述</li>
                 <li>点击「✨ 转换为 JSON Prompt」</li>
             </ol>
@@ -695,7 +680,12 @@
 
         // 获取代理 URL
         function getProxyUrl() {
-            return document.getElementById('proxyUrl').value.trim() || 'http://localhost:3000';
+            return 'http://localhost:3000';
+        }
+
+        // 获取选中的模型
+        function getSelectedModel() {
+            return document.getElementById('modelSelect').value;
         }
 
         // 显示/隐藏 API Key
@@ -704,26 +694,7 @@
             input.type = input.type === 'password' ? 'text' : 'password';
         }
 
-        // 测试代理服务器
-        async function testProxy() {
-            const proxyUrl = getProxyUrl();
-            const statusDot = document.getElementById('proxyStatus');
-
-            try {
-                const response = await fetch(`${proxyUrl}/health`);
-                if (response.ok) {
-                    statusDot.className = 'status-dot connected';
-                    showToast('✅ 代理服务器连接成功', 'success');
-                } else {
-                    throw new Error('服务器响应异常');
-                }
-            } catch (err) {
-                statusDot.className = 'status-dot error';
-                showToast(`❌ 代理服务器连接失败: ${err.message}`, 'error');
-            }
-        }
-
-        // 测试 API Key
+        // 验证 API Key（同时验证代理服务器）
         async function testApiKey() {
             const proxyUrl = getProxyUrl();
             const apiKey = document.getElementById('apiKey').value.trim();
@@ -747,7 +718,7 @@
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: 'doubao-seed-1-6-251015',
+                        model: getSelectedModel(),
                         max_tokens: 10,
                         messages: [{ role: 'user', content: 'Hi' }]
                     })
@@ -827,7 +798,7 @@
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: 'doubao-seed-1-6-251015',
+                        model: getSelectedModel(),
                         max_tokens: 4096,
                         messages: [
                             {
@@ -945,24 +916,13 @@ ${inputPrompt}
             localStorage.setItem('api_key', e.target.value);
         });
 
-        document.getElementById('proxyUrl').addEventListener('change', (e) => {
-            localStorage.setItem('proxy_url', e.target.value);
-        });
-
         // 页面加载时恢复设置
         window.addEventListener('load', () => {
             const savedKey = localStorage.getItem('api_key');
-            const savedProxy = localStorage.getItem('proxy_url');
 
             if (savedKey) {
                 document.getElementById('apiKey').value = savedKey;
             }
-            if (savedProxy) {
-                document.getElementById('proxyUrl').value = savedProxy;
-            }
-
-            // 自动测试代理连接
-            setTimeout(testProxy, 500);
         });
     </script>
 </body>
