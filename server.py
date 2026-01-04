@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 # 配置
-PORT = int(os.environ.get('PORT', 3000))
+PORT = int(os.environ.get('PORT', 8088))
 DOUBAO_API_URL = 'https://ark.cn-beijing.volces.com/api/v3'
 PROMPTS_DIR = Path(__file__).parent / 'prompts'
 
