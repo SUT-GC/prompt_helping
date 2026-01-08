@@ -520,6 +520,139 @@
             color: var(--text-muted);
         }
 
+        .framework-help-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--border-color);
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            transition: all 0.2s ease;
+        }
+
+        .framework-help-btn:hover {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        /* Modal 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-pink);
+            border-color: var(--accent-pink);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: calc(80vh - 80px);
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .modal-body h4 {
+            color: var(--accent-cyan);
+            margin: 16px 0 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .modal-body h4:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body ul {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .modal-body li {
+            margin: 6px 0;
+        }
+
+        .modal-body code {
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            color: var(--accent-purple);
+        }
+
         /* 转换按钮区 */
         .action-section {
             display: flex;
@@ -802,23 +935,38 @@
                     <label class="template-label">选择优化框架：</label>
                     <div class="framework-grid" id="frameworkGrid">
                         <div class="framework-card active" data-framework="rtf">
-                            <div class="framework-card-title">🚀 RTF</div>
+                            <div class="framework-card-title">
+                                🚀 RTF
+                                <button class="framework-help-btn" onclick="showFrameworkHelp(event, 'rtf')">?</button>
+                            </div>
                             <div class="framework-card-desc">Role-Task-Format，简单快速</div>
                         </div>
                         <div class="framework-card" data-framework="costar">
-                            <div class="framework-card-title">📝 CO-STAR</div>
+                            <div class="framework-card-title">
+                                📝 CO-STAR
+                                <button class="framework-help-btn" onclick="showFrameworkHelp(event, 'costar')">?</button>
+                            </div>
                             <div class="framework-card-desc">适合内容创作、营销文案</div>
                         </div>
                         <div class="framework-card" data-framework="risen">
-                            <div class="framework-card-title">🎯 RISEN</div>
+                            <div class="framework-card-title">
+                                🎯 RISEN
+                                <button class="framework-help-btn" onclick="showFrameworkHelp(event, 'risen')">?</button>
+                            </div>
                             <div class="framework-card-desc">精准控制，适合复杂任务</div>
                         </div>
                         <div class="framework-card" data-framework="crispe">
-                            <div class="framework-card-title">🔧 CRISPE</div>
+                            <div class="framework-card-title">
+                                🔧 CRISPE
+                                <button class="framework-help-btn" onclick="showFrameworkHelp(event, 'crispe')">?</button>
+                            </div>
                             <div class="framework-card-desc">多步骤任务，需要约束</div>
                         </div>
                         <div class="framework-card" data-framework="roses">
-                            <div class="framework-card-title">📊 ROSES</div>
+                            <div class="framework-card-title">
+                                📊 ROSES
+                                <button class="framework-help-btn" onclick="showFrameworkHelp(event, 'roses')">?</button>
+                            </div>
                             <div class="framework-card-desc">战略决策、问题分析</div>
                         </div>
                     </div>
@@ -872,6 +1020,17 @@
 
     <!-- Toast 提示 -->
     <div class="toast" id="toast"></div>
+
+    <!-- 框架帮助 Modal -->
+    <div class="modal-overlay" id="frameworkModal" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">框架说明</div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
 
     <script>
         // ==================== 全局状态 ====================
@@ -1264,6 +1423,123 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+
+        // ==================== 框架帮助 Modal ====================
+        const frameworkInfo = {
+            rtf: {
+                icon: '🚀',
+                name: 'RTF 框架',
+                fullName: 'Role - Task - Format',
+                desc: '最简洁高效的 Prompt 框架，适合日常快速任务。',
+                components: [
+                    { letter: 'R', name: 'Role（角色）', desc: '定义 AI 扮演的角色身份' },
+                    { letter: 'T', name: 'Task（任务）', desc: '明确要完成的具体任务' },
+                    { letter: 'F', name: 'Format（格式）', desc: '指定输出的格式要求' }
+                ],
+                bestFor: '简单任务、日常问答、快速指令'
+            },
+            costar: {
+                icon: '📝',
+                name: 'CO-STAR 框架',
+                fullName: 'Context - Objective - Style - Tone - Audience - Response',
+                desc: '专为内容创作设计的框架，能够产出风格精准的文案。',
+                components: [
+                    { letter: 'C', name: 'Context（背景）', desc: '提供任务的上下文信息' },
+                    { letter: 'O', name: 'Objective（目标）', desc: '明确要达成的结果' },
+                    { letter: 'S', name: 'Style（风格）', desc: '指定写作或表达风格' },
+                    { letter: 'T', name: 'Tone（语气）', desc: '定义情感基调' },
+                    { letter: 'A', name: 'Audience（受众）', desc: '明确目标读者群体' },
+                    { letter: 'R', name: 'Response（响应）', desc: '指定输出形式' }
+                ],
+                bestFor: '营销文案、内容创作、品牌传播'
+            },
+            risen: {
+                icon: '🎯',
+                name: 'RISEN 框架',
+                fullName: 'Role - Instructions - Steps - End goal - Narrowing',
+                desc: '精准控制型框架，适合需要详细指导的复杂任务。',
+                components: [
+                    { letter: 'R', name: 'Role（角色）', desc: '定义 AI 的身份和专业背景' },
+                    { letter: 'I', name: 'Instructions（指令）', desc: '给出具体的执行指令' },
+                    { letter: 'S', name: 'Steps（步骤）', desc: '分解任务的执行步骤' },
+                    { letter: 'E', name: 'End goal（期望结果）', desc: '明确最终要达成的目标' },
+                    { letter: 'N', name: 'Narrowing（限制）', desc: '指定约束、边界和注意事项' }
+                ],
+                bestFor: '技术文档、代码审查、复杂分析'
+            },
+            crispe: {
+                icon: '🔧',
+                name: 'CRISPE 框架',
+                fullName: 'Context - Role - Input - Steps - Parameters - Example',
+                desc: '强调约束和示例的框架，适合需要严格输出格式的任务。',
+                components: [
+                    { letter: 'C', name: 'Context（上下文）', desc: '提供任务背景和相关信息' },
+                    { letter: 'R', name: 'Role（角色）', desc: '定义 AI 的身份' },
+                    { letter: 'I', name: 'Input（输入）', desc: '说明会提供什么信息' },
+                    { letter: 'S', name: 'Steps（步骤）', desc: '描述执行过程' },
+                    { letter: 'P', name: 'Parameters（参数）', desc: '指定限制条件和规范' },
+                    { letter: 'E', name: 'Example（示例）', desc: '提供参考样例' }
+                ],
+                bestFor: '多步骤任务、格式转换、规范化输出'
+            },
+            roses: {
+                icon: '📊',
+                name: 'ROSES 框架',
+                fullName: 'Role - Objective - Scenario - Expected Solution - Steps',
+                desc: '面向战略决策和问题分析的框架，适合复杂问题的分析和规划。',
+                components: [
+                    { letter: 'R', name: 'Role（角色）', desc: '定义专业身份和视角' },
+                    { letter: 'O', name: 'Objective（目标）', desc: '明确要解决的问题或达成的目标' },
+                    { letter: 'S', name: 'Scenario（场景）', desc: '描述当前情况和背景' },
+                    { letter: 'E', name: 'Expected Solution（期望方案）', desc: '说明理想的结果形态' },
+                    { letter: 'S', name: 'Steps（步骤）', desc: '定义分析或执行的路径' }
+                ],
+                bestFor: '战略规划、问题诊断、方案设计'
+            }
+        };
+
+        function showFrameworkHelp(event, framework) {
+            event.stopPropagation(); // 阻止触发卡片选择
+            const info = frameworkInfo[framework];
+            if (!info) return;
+
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            modalTitle.innerHTML = `${info.icon} ${info.name}`;
+
+            let componentsHtml = info.components.map(c =>
+                `<li><code>${c.letter}</code> <strong>${c.name}</strong>：${c.desc}</li>`
+            ).join('');
+
+            modalBody.innerHTML = `
+                <h4>全称</h4>
+                <p>${info.fullName}</p>
+
+                <h4>框架说明</h4>
+                <p>${info.desc}</p>
+
+                <h4>组成要素</h4>
+                <ul>${componentsHtml}</ul>
+
+                <h4>最适合场景</h4>
+                <p>${info.bestFor}</p>
+            `;
+
+            document.getElementById('frameworkModal').classList.add('show');
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('frameworkModal').classList.remove('show');
+        }
+
+        // ESC 键关闭 Modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
 
         // ==================== 初始化 ====================
         window.addEventListener('load', () => {
