@@ -1,5 +1,5 @@
 """
-JSON Prompt Converter - Flask 后端服务
+Prompt Studio - Flask 后端服务
 用于转发请求到豆包 API，解决浏览器 CORS 限制
 """
 
@@ -26,9 +26,16 @@ def load_prompts():
     """启动时加载所有 prompt 文件"""
     global PROMPTS
     prompt_files = {
+        # JSON 转换模板
         'image': 'image.txt',
         'infographic': 'infographic.txt',
-        'architecture': 'architecture.txt'
+        'architecture': 'architecture.txt',
+        # Prompt 优化器模板
+        'optimizer_rtf': 'optimizer_rtf.txt',
+        'optimizer_costar': 'optimizer_costar.txt',
+        'optimizer_risen': 'optimizer_risen.txt',
+        'optimizer_crispe': 'optimizer_crispe.txt',
+        'optimizer_roses': 'optimizer_roses.txt',
     }
 
     for prompt_type, filename in prompt_files.items():
@@ -128,7 +135,7 @@ if __name__ == '__main__':
     print(f"""
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
-║   🚀 JSON Prompt Converter Server (Flask)                  ║
+║   🚀 Prompt Studio Server (Flask)                          ║
 ║                                                            ║
 ║   Server:    http://localhost:{PORT}                        ║
 ║   Health:    http://localhost:{PORT}/health                 ║

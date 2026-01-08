@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Prompt Converter | 智能提示词结构化工具</title>
+    <title>Prompt Studio | 智能提示词工作台</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -21,6 +21,7 @@
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
             --border-color: #2d2d3a;
+            --sidebar-width: 220px;
             --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.3);
             --glow-purple: 0 0 20px rgba(168, 85, 247, 0.3);
         }
@@ -39,14 +40,14 @@
             overflow-x: hidden;
         }
 
-        /* 背景动画 */
+        /* 背景 */
         .bg-grid {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
@@ -54,128 +55,219 @@
             z-index: 0;
         }
 
-        .bg-glow {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(150px);
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .bg-glow-1 {
-            top: -200px;
-            right: -200px;
-            background: var(--accent-cyan);
-        }
-
-        .bg-glow-2 {
-            bottom: -200px;
-            left: -200px;
-            background: var(--accent-purple);
-        }
-
-        /* 主容器 */
-        .container {
+        /* 整体布局 */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
             position: relative;
             z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 24px;
         }
 
-        /* 头部 */
-        .header {
-            text-align: center;
-            margin-bottom: 48px;
+        /* 侧边栏 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .logo {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 16px;
         }
 
         .logo-icon {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             box-shadow: var(--glow-cyan);
         }
 
-        .title {
-            font-size: 2.5rem;
+        .logo-text {
+            font-size: 1.2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            font-weight: 300;
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
-        /* 配置区 */
-        .config-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        @media (max-width: 768px) {
-            .config-section {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .config-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .config-header {
+        .nav-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.9rem;
         }
 
-        .config-header h3 {
-            font-size: 0.95rem;
-            font-weight: 500;
+        .nav-item:hover {
+            background: var(--bg-tertiary);
             color: var(--text-primary);
         }
 
-        .status-dot {
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(168, 85, 247, 0.1));
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .nav-item-icon {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-spacer {
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item.settings {
+            position: relative;
+        }
+
+        .config-status {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             background: var(--text-muted);
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .config-status.configured {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 32px 40px;
+            min-height: 100vh;
+        }
+
+        /* 页面容器 */
+        .page {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
             transition: all 0.3s ease;
         }
 
-        .status-dot.connected {
-            background: var(--accent-green);
-            box-shadow: 0 0 10px var(--accent-green);
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
         }
 
-        .status-dot.error {
-            background: var(--accent-pink);
-            box-shadow: 0 0 10px var(--accent-pink);
+        .form-input::placeholder {
+            color: var(--text-muted);
         }
 
         .input-group {
@@ -183,29 +275,60 @@
             gap: 10px;
         }
 
-        .config-input {
+        .input-group .form-input {
             flex: 1;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
             border-radius: 10px;
-            padding: 12px 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--text-primary);
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .config-input:focus {
-            outline: none;
-            border-color: var(--accent-cyan);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
             box-shadow: var(--glow-cyan);
         }
 
-        .config-input::placeholder {
-            color: var(--text-muted);
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
         }
 
-        /* 主工作区 */
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .btn-small {
+            padding: 8px 14px;
+            font-size: 0.8rem;
+        }
+
+        /* 工作区布局 */
         .workspace {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -273,7 +396,7 @@
 
         textarea {
             flex: 1;
-            min-height: 400px;
+            min-height: 350px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -297,7 +420,7 @@
 
         .output-area {
             flex: 1;
-            min-height: 400px;
+            min-height: 350px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -317,64 +440,7 @@
             justify-content: center;
         }
 
-        /* 按钮样式 */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Noto Sans SC', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-            color: white;
-            box-shadow: var(--glow-cyan);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-
-        .btn-small {
-            padding: 8px 14px;
-            font-size: 0.8rem;
-        }
-
-        /* 转换按钮区域 */
-        .convert-section {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin: 32px 0;
-        }
-
-        /* 模板选择 */
+        /* 模板/框架选择 */
         .template-section {
             margin-bottom: 24px;
         }
@@ -382,7 +448,7 @@
         .template-label {
             font-size: 0.85rem;
             color: var(--text-secondary);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: block;
         }
 
@@ -401,6 +467,7 @@
             font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: inherit;
         }
 
         .template-btn:hover {
@@ -412,6 +479,53 @@
             border-color: var(--accent-purple);
             background: rgba(168, 85, 247, 0.1);
             color: var(--accent-purple);
+        }
+
+        /* 框架选择卡片 */
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .framework-card {
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .framework-card:hover {
+            border-color: var(--accent-purple);
+        }
+
+        .framework-card.active {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .framework-card-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .framework-card-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* 转换按钮区 */
+        .action-section {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin: 24px 0;
         }
 
         /* 加载动画 */
@@ -461,296 +575,456 @@
             border-color: var(--accent-pink);
         }
 
-        /* 使用说明 */
-        .instructions {
-            margin-top: 48px;
-            padding: 32px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-        }
-
-        .instructions h3 {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+        .toast-link {
             color: var(--accent-cyan);
+            cursor: pointer;
+            text-decoration: underline;
         }
 
-        .instructions ol {
-            padding-left: 24px;
-            color: var(--text-secondary);
-            line-height: 2;
-        }
-
-        .instructions code {
-            background: var(--bg-tertiary);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85em;
-            color: var(--accent-purple);
-        }
-
-        .instructions pre {
-            background: var(--bg-tertiary);
-            padding: 16px;
-            border-radius: 8px;
-            margin: 16px 0;
-            overflow-x: auto;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
+        /* 设置页成功状态 */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background: rgba(16, 185, 129, 0.1);
             color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .title {
-                font-size: 1.8rem;
-            }
-
-            .input-group {
-                flex-direction: column;
-            }
-
-            .convert-section {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .template-grid {
-                flex-direction: column;
-            }
+        .status-badge.error {
+            background: rgba(236, 72, 153, 0.1);
+            color: var(--accent-pink);
+            border-color: rgba(236, 72, 153, 0.3);
         }
 
-        /* 帮助提示 */
-        .help-tip {
-            font-size: 0.75rem;
+        .status-badge.pending {
+            background: rgba(100, 116, 139, 0.1);
             color: var(--text-muted);
-            margin-top: 8px;
+            border-color: rgba(100, 116, 139, 0.3);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar-header {
+                padding: 16px;
+            }
+
+            .logo-text, .nav-item span {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+
+            .nav-item-icon {
+                margin: 0;
+            }
+
+            .main-content {
+                margin-left: 60px;
+                padding: 24px 16px;
+            }
+
+            .config-status {
+                right: 8px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="bg-grid"></div>
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
 
-    <div class="container">
-        <!-- 头部 -->
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">⚡</div>
-                <h1 class="title">JSON Prompt Converter</h1>
-            </div>
-            <p class="subtitle">将自然语言提示词智能转换为结构化 JSON Prompting</p>
-        </header>
-
-        <!-- 配置区 -->
-        <div class="config-section">
-            <!-- 模型选择 -->
-            <div class="config-card">
-                <div class="config-header">
-                    <h3>🤖 模型选择</h3>
-                </div>
-                <div class="input-group">
-                    <select class="config-input" id="modelSelect">
-                        <option value="doubao-seed-1-6-251015" selected>豆包 Seed 1.6</option>
-                    </select>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">⚡</div>
+                    <span class="logo-text">Prompt Studio</span>
                 </div>
             </div>
 
-            <!-- API Key 配置 -->
-            <div class="config-card">
-                <div class="config-header">
-                    <span class="status-dot" id="apiStatus"></span>
-                    <h3>🔑 API Key</h3>
-                </div>
-                <div class="input-group">
-                    <input
-                        type="password"
-                        class="config-input"
-                        id="apiKey"
-                        placeholder="输入您的 API Key..."
-                    >
-                    <button class="btn btn-secondary btn-small" onclick="toggleApiKeyVisibility()">
-                        👁️
-                    </button>
-                    <button class="btn btn-secondary btn-small" onclick="testApiKey()">
-                        ✓ 验证
-                    </button>
-                </div>
-            </div>
-        </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-page="json-converter">
+                    <span class="nav-item-icon">📝</span>
+                    <span>JSON 转换</span>
+                </button>
+                <button class="nav-item" data-page="prompt-optimizer">
+                    <span class="nav-item-icon">✨</span>
+                    <span>Prompt 优化</span>
+                </button>
 
-        <!-- 模板选择 -->
-        <div class="template-section">
-            <label class="template-label">选择输出类型：</label>
-            <div class="template-grid">
-                <button class="template-btn active" data-type="image">🎨 图像生成</button>
-                <button class="template-btn" data-type="infographic">📊 信息图表</button>
-                <button class="template-btn" data-type="architecture">🏗️ 代码架构</button>
-            </div>
-        </div>
+                <div class="nav-spacer"></div>
+            </nav>
 
-        <!-- 主工作区 -->
-        <div class="workspace">
-            <!-- 输入面板 -->
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="panel-icon input">📝</div>
-                        <span>原始 Prompt 输入</span>
+            <div class="sidebar-footer">
+                <button class="nav-item settings" data-page="settings">
+                    <span class="nav-item-icon">⚙️</span>
+                    <span>设置</span>
+                    <span class="config-status" id="configStatus"></span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+
+            <!-- 设置页 -->
+            <div class="page" id="page-settings">
+                <div class="page-header">
+                    <h1 class="page-title">设置</h1>
+                    <p class="page-desc">配置模型和 API Key，这些设置将应用于所有功能</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">🤖 模型配置</h3>
+                    <div class="form-group">
+                        <label class="form-label">选择模型</label>
+                        <select class="form-input" id="modelSelect">
+                            <option value="doubao-seed-1-6-251015">豆包 Seed 1.6</option>
+                        </select>
                     </div>
-                    <button class="btn btn-secondary btn-small" onclick="clearInput()">清空</button>
                 </div>
-                <div class="panel-body">
-                    <textarea 
-                        id="inputPrompt" 
-                        placeholder="在这里粘贴你的自然语言提示词...
+
+                <div class="card">
+                    <h3 class="card-title">🔑 API Key 配置</h3>
+                    <div class="form-group">
+                        <label class="form-label">豆包 API Key</label>
+                        <div class="input-group">
+                            <input
+                                type="password"
+                                class="form-input"
+                                id="apiKey"
+                                placeholder="输入您的 API Key..."
+                            >
+                            <button class="btn btn-secondary btn-small" onclick="toggleApiKeyVisibility()">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <button class="btn btn-primary" onclick="saveAndTestConfig()">
+                            保存并验证
+                        </button>
+                        <span class="status-badge pending" id="apiStatus">
+                            <span>●</span> 未配置
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON 转换页 -->
+            <div class="page active" id="page-json-converter">
+                <div class="page-header">
+                    <h1 class="page-title">JSON Prompt 转换</h1>
+                    <p class="page-desc">将自然语言提示词智能转换为结构化 JSON Prompting</p>
+                </div>
+
+                <div class="template-section">
+                    <label class="template-label">选择输出类型：</label>
+                    <div class="template-grid" id="jsonTemplateGrid">
+                        <button class="template-btn active" data-type="image">🎨 图像生成</button>
+                        <button class="template-btn" data-type="infographic">📊 信息图表</button>
+                        <button class="template-btn" data-type="architecture">🏗️ 代码架构</button>
+                    </div>
+                </div>
+
+                <div class="workspace">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <div class="panel-icon input">📝</div>
+                                <span>原始 Prompt 输入</span>
+                            </div>
+                            <button class="btn btn-secondary btn-small" onclick="clearInput('jsonInput')">清空</button>
+                        </div>
+                        <div class="panel-body">
+                            <textarea
+                                id="jsonInput"
+                                placeholder="在这里输入你的自然语言提示词...
 
 例如：
 请生成一张排班系统性能优化的总结图。标题是 Schedule Calendar 性能优化。
 
 内容要体现三期优化：
 - 一期：Max RT 从 26s 降到 21s
-- 二期：P99 从 6.2s 降到 3.1s  
+- 二期：P99 从 6.2s 降到 3.1s
 - 三期：NPS 提升 124.9%
 
 风格：涂鸦风格，马克笔触感，米色背景，黄色蓝色高光"
-                    ></textarea>
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <div class="panel-icon output">🔮</div>
+                                <span>JSON Prompt 输出</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-secondary btn-small" onclick="copyOutput('jsonOutput')">📋 复制</button>
+                                <button class="btn btn-secondary btn-small" onclick="downloadJSON()">💾 下载</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="output-area" id="jsonOutput">
+                                <span style="color: var(--text-muted);">转换后的 JSON Prompt 将显示在这里...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <button class="btn btn-primary" id="jsonConvertBtn" onclick="convertToJSON()">
+                        ✨ 转换为 JSON Prompt
+                    </button>
                 </div>
             </div>
 
-            <!-- 输出面板 -->
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <div class="panel-icon output">🔮</div>
-                        <span>JSON Prompt 输出</span>
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-secondary btn-small" onclick="copyOutput()">📋 复制</button>
-                        <button class="btn btn-secondary btn-small" onclick="downloadJSON()">💾 下载</button>
+            <!-- Prompt 优化页 -->
+            <div class="page" id="page-prompt-optimizer">
+                <div class="page-header">
+                    <h1 class="page-title">Prompt 优化器</h1>
+                    <p class="page-desc">使用业界主流框架将粗糙 Prompt 优化为结构化的高质量 Prompt</p>
+                </div>
+
+                <div class="template-section">
+                    <label class="template-label">选择优化框架：</label>
+                    <div class="framework-grid" id="frameworkGrid">
+                        <div class="framework-card active" data-framework="rtf">
+                            <div class="framework-card-title">🚀 RTF</div>
+                            <div class="framework-card-desc">Role-Task-Format，简单快速</div>
+                        </div>
+                        <div class="framework-card" data-framework="costar">
+                            <div class="framework-card-title">📝 CO-STAR</div>
+                            <div class="framework-card-desc">适合内容创作、营销文案</div>
+                        </div>
+                        <div class="framework-card" data-framework="risen">
+                            <div class="framework-card-title">🎯 RISEN</div>
+                            <div class="framework-card-desc">精准控制，适合复杂任务</div>
+                        </div>
+                        <div class="framework-card" data-framework="crispe">
+                            <div class="framework-card-title">🔧 CRISPE</div>
+                            <div class="framework-card-desc">多步骤任务，需要约束</div>
+                        </div>
+                        <div class="framework-card" data-framework="roses">
+                            <div class="framework-card-title">📊 ROSES</div>
+                            <div class="framework-card-desc">战略决策、问题分析</div>
+                        </div>
                     </div>
                 </div>
-                <div class="panel-body">
-                    <div class="output-area" id="outputArea">
-                        <span style="color: var(--text-muted);">转换后的 JSON Prompt 将显示在这里...</span>
+
+                <div class="workspace">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <div class="panel-icon input">📝</div>
+                                <span>原始 Prompt</span>
+                            </div>
+                            <button class="btn btn-secondary btn-small" onclick="clearInput('optimizerInput')">清空</button>
+                        </div>
+                        <div class="panel-body">
+                            <textarea
+                                id="optimizerInput"
+                                placeholder="输入你想要优化的粗糙 Prompt...
+
+例如：
+帮我写一篇关于人工智能的文章"
+                            ></textarea>
+                        </div>
                     </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <div class="panel-icon output">✨</div>
+                                <span>优化后的 Prompt</span>
+                            </div>
+                            <button class="btn btn-secondary btn-small" onclick="copyOutput('optimizerOutput')">📋 复制</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="output-area" id="optimizerOutput">
+                                <span style="color: var(--text-muted);">优化后的 Prompt 将显示在这里...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <button class="btn btn-primary" id="optimizeBtn" onclick="optimizePrompt()">
+                        ✨ 优化 Prompt
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- 转换按钮 -->
-        <div class="convert-section">
-            <button class="btn btn-primary" id="convertBtn" onclick="convertToJSON()">
-                ✨ 转换为 JSON Prompt
-            </button>
-        </div>
-
-        <!-- 使用说明 -->
-        <div class="instructions">
-            <h3>📖 快速开始</h3>
-            <ol>
-                <li>选择模型，输入 API Key 并点击「验证」</li>
-                <li>选择输出类型（图像/信息图表/代码架构）</li>
-                <li>在左侧文本框粘贴你的自然语言描述</li>
-                <li>点击「✨ 转换为 JSON Prompt」</li>
-            </ol>
-        </div>
+        </main>
     </div>
 
     <!-- Toast 提示 -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // 全局变量
-        let selectedType = 'image';
-        let currentOutput = '';
-        let promptsCache = {}; // 缓存从后端获取的 prompts
+        // ==================== 全局状态 ====================
+        let currentPage = 'json-converter';
+        let selectedJsonType = 'image';
+        let selectedFramework = 'rtf';
+        let jsonOutput = '';
+        let optimizerOutput = '';
+        let promptsCache = {};
 
-        // 模板选择
-        document.querySelectorAll('.template-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedType = btn.dataset.type;
+        // ==================== 配置管理 ====================
+        function getConfig() {
+            return {
+                apiKey: localStorage.getItem('api_key') || '',
+                model: localStorage.getItem('model') || 'doubao-seed-1-6-251015',
+                isConfigured: localStorage.getItem('api_configured') === 'true'
+            };
+        }
+
+        function saveConfig(apiKey, model) {
+            localStorage.setItem('api_key', apiKey);
+            localStorage.setItem('model', model);
+        }
+
+        function setConfigured(status) {
+            localStorage.setItem('api_configured', status);
+            updateConfigStatus();
+        }
+
+        function checkConfig() {
+            const config = getConfig();
+            if (!config.apiKey || !config.isConfigured) {
+                showToast('请先在设置页面配置 API Key', 'error', true);
+                return false;
+            }
+            return true;
+        }
+
+        function updateConfigStatus() {
+            const config = getConfig();
+            const statusDot = document.getElementById('configStatus');
+            const statusBadge = document.getElementById('apiStatus');
+
+            if (config.isConfigured) {
+                statusDot.classList.add('configured');
+                if (statusBadge) {
+                    statusBadge.className = 'status-badge';
+                    statusBadge.innerHTML = '<span>●</span> 已验证';
+                }
+            } else {
+                statusDot.classList.remove('configured');
+                if (statusBadge) {
+                    statusBadge.className = 'status-badge pending';
+                    statusBadge.innerHTML = '<span>●</span> 未配置';
+                }
+            }
+        }
+
+        // ==================== 页面导航 ====================
+        function navigateTo(pageName) {
+            currentPage = pageName;
+
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === pageName) {
+                    item.classList.add('active');
+                }
+            });
+
+            // 切换页面
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`page-${pageName}`).classList.add('active');
+        }
+
+        // 绑定导航事件
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                navigateTo(item.dataset.page);
             });
         });
 
-        // 获取代理 URL
-        function getProxyUrl() {
-            return '';
-        }
-
-        // 获取选中的模型
-        function getSelectedModel() {
-            return document.getElementById('modelSelect').value;
-        }
-
-        // 显示/隐藏 API Key
+        // ==================== 设置页功能 ====================
         function toggleApiKeyVisibility() {
             const input = document.getElementById('apiKey');
             input.type = input.type === 'password' ? 'text' : 'password';
         }
 
-        // 验证 API Key（同时验证代理服务器）
-        async function testApiKey() {
-            const proxyUrl = getProxyUrl();
+        async function saveAndTestConfig() {
             const apiKey = document.getElementById('apiKey').value.trim();
-            const statusDot = document.getElementById('apiStatus');
-            const verifyBtn = document.querySelector('button[onclick="testApiKey()"]');
-            const originalText = verifyBtn.innerHTML;
+            const model = document.getElementById('modelSelect').value;
+            const statusBadge = document.getElementById('apiStatus');
 
             if (!apiKey) {
-                showToast('请先输入 API Key', 'error');
+                showToast('请输入 API Key', 'error');
                 return;
             }
 
-            verifyBtn.disabled = true;
-            verifyBtn.innerHTML = '⏳';
+            // 保存配置
+            saveConfig(apiKey, model);
+
+            // 显示验证中状态
+            statusBadge.className = 'status-badge pending';
+            statusBadge.innerHTML = '<span>●</span> 验证中...';
 
             try {
-                const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+                const response = await fetch('/v1/chat/completions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: getSelectedModel(),
+                        model: model,
                         max_tokens: 10,
                         messages: [{ role: 'user', content: 'Hi' }]
                     })
                 });
 
                 if (response.ok) {
-                    statusDot.className = 'status-dot connected';
-                    showToast('✅ API Key 验证成功', 'success');
+                    setConfigured('true');
+                    showToast('✅ 配置保存成功，API Key 已验证', 'success');
                 } else {
                     const error = await response.json();
                     throw new Error(error.error?.message || '验证失败');
                 }
             } catch (err) {
-                statusDot.className = 'status-dot error';
+                setConfigured('false');
+                statusBadge.className = 'status-badge error';
+                statusBadge.innerHTML = '<span>●</span> 验证失败';
                 showToast(`❌ API Key 验证失败: ${err.message}`, 'error');
-            } finally {
-                verifyBtn.disabled = false;
-                verifyBtn.innerHTML = originalText;
             }
         }
 
-        // 从后端获取 System Prompt
-        async function getSystemPrompt(type) {
-            const proxyUrl = getProxyUrl();
+        // ==================== JSON 转换功能 ====================
+        // 模板选择
+        document.querySelectorAll('#jsonTemplateGrid .template-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#jsonTemplateGrid .template-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedJsonType = btn.dataset.type;
+            });
+        });
 
-            // 先检查缓存
+        async function getSystemPrompt(type) {
             if (promptsCache[type]) {
                 return promptsCache[type];
             }
 
             try {
-                const response = await fetch(`${proxyUrl}/prompts/${type}`);
+                const response = await fetch(`/prompts/${type}`);
                 if (response.ok) {
                     const data = await response.json();
                     promptsCache[type] = data.content;
@@ -764,18 +1038,13 @@
             }
         }
 
-        // 主转换函数
         async function convertToJSON() {
-            const proxyUrl = getProxyUrl();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const inputPrompt = document.getElementById('inputPrompt').value.trim();
-            const outputArea = document.getElementById('outputArea');
-            const convertBtn = document.getElementById('convertBtn');
+            if (!checkConfig()) return;
 
-            if (!apiKey) {
-                showToast('请先输入 API Key', 'error');
-                return;
-            }
+            const config = getConfig();
+            const inputPrompt = document.getElementById('jsonInput').value.trim();
+            const outputArea = document.getElementById('jsonOutput');
+            const convertBtn = document.getElementById('jsonConvertBtn');
 
             if (!inputPrompt) {
                 showToast('请输入要转换的 Prompt', 'error');
@@ -788,30 +1057,22 @@
             outputArea.classList.add('loading');
 
             try {
-                // 从后端获取对应类型的 System Prompt
-                const systemPrompt = await getSystemPrompt(selectedType);
+                const systemPrompt = await getSystemPrompt(selectedJsonType);
 
-                const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+                const response = await fetch('/v1/chat/completions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
+                        'Authorization': `Bearer ${config.apiKey}`
                     },
                     body: JSON.stringify({
-                        model: getSelectedModel(),
+                        model: config.model,
                         max_tokens: 4096,
                         messages: [
-                            {
-                                role: 'system',
-                                content: systemPrompt
-                            },
+                            { role: 'system', content: systemPrompt },
                             {
                                 role: 'user',
-                                content: `请将以下自然语言描述转换为结构化的 JSON Prompt。
-
-${inputPrompt}
-
-请直接输出 JSON，不要包含任何解释或 markdown 代码块标记。`
+                                content: `请将以下自然语言描述转换为结构化的 JSON Prompt。\n\n${inputPrompt}\n\n请直接输出 JSON，不要包含任何解释或 markdown 代码块标记。`
                             }
                         ]
                     })
@@ -825,16 +1086,15 @@ ${inputPrompt}
                 const data = await response.json();
                 const content = data.choices[0].message.content;
 
-                // 尝试格式化 JSON
                 try {
                     const parsed = JSON.parse(content);
-                    currentOutput = JSON.stringify(parsed, null, 2);
+                    jsonOutput = JSON.stringify(parsed, null, 2);
                 } catch {
-                    currentOutput = content;
+                    jsonOutput = content;
                 }
 
                 outputArea.classList.remove('loading');
-                outputArea.innerHTML = syntaxHighlight(currentOutput);
+                outputArea.innerHTML = syntaxHighlight(jsonOutput);
                 showToast('✅ 转换成功！', 'success');
 
             } catch (err) {
@@ -847,82 +1107,173 @@ ${inputPrompt}
             }
         }
 
-        // JSON 语法高亮
         function syntaxHighlight(json) {
             json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                let cls = 'color: #f59e0b;'; // number
+                let cls = 'color: #f59e0b;';
                 if (/^"/.test(match)) {
                     if (/:$/.test(match)) {
-                        cls = 'color: #00d4ff;'; // key
+                        cls = 'color: #00d4ff;';
                     } else {
-                        cls = 'color: #10b981;'; // string
+                        cls = 'color: #10b981;';
                     }
                 } else if (/true|false/.test(match)) {
-                    cls = 'color: #a855f7;'; // boolean
+                    cls = 'color: #a855f7;';
                 } else if (/null/.test(match)) {
-                    cls = 'color: #ec4899;'; // null
+                    cls = 'color: #ec4899;';
                 }
                 return '<span style="' + cls + '">' + match + '</span>';
             });
         }
 
-        // 复制输出
-        function copyOutput() {
-            if (!currentOutput) {
+        function downloadJSON() {
+            if (!jsonOutput) {
+                showToast('没有可下载的内容', 'error');
+                return;
+            }
+            const blob = new Blob([jsonOutput], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `json-prompt-${selectedJsonType}-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('✅ 下载成功', 'success');
+        }
+
+        // ==================== Prompt 优化功能 ====================
+        // 框架选择
+        document.querySelectorAll('#frameworkGrid .framework-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#frameworkGrid .framework-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                selectedFramework = card.dataset.framework;
+            });
+        });
+
+        async function getOptimizerPrompt(framework) {
+            const cacheKey = `optimizer_${framework}`;
+            if (promptsCache[cacheKey]) {
+                return promptsCache[cacheKey];
+            }
+
+            try {
+                const response = await fetch(`/prompts/optimizer_${framework}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    promptsCache[cacheKey] = data.content;
+                    return data.content;
+                } else {
+                    throw new Error(`获取 ${framework} 框架 prompt 失败`);
+                }
+            } catch (err) {
+                console.error('获取 prompt 失败:', err);
+                throw err;
+            }
+        }
+
+        async function optimizePrompt() {
+            if (!checkConfig()) return;
+
+            const config = getConfig();
+            const inputPrompt = document.getElementById('optimizerInput').value.trim();
+            const outputArea = document.getElementById('optimizerOutput');
+            const optimizeBtn = document.getElementById('optimizeBtn');
+
+            if (!inputPrompt) {
+                showToast('请输入要优化的 Prompt', 'error');
+                return;
+            }
+
+            optimizeBtn.disabled = true;
+            optimizeBtn.innerHTML = '⏳ 优化中...';
+            outputArea.innerHTML = '<div class="loader"></div>';
+            outputArea.classList.add('loading');
+
+            try {
+                const systemPrompt = await getOptimizerPrompt(selectedFramework);
+
+                const response = await fetch('/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${config.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: config.model,
+                        max_tokens: 4096,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            {
+                                role: 'user',
+                                content: `请将以下粗糙的 Prompt 按照框架进行优化：\n\n${inputPrompt}`
+                            }
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || '请求失败');
+                }
+
+                const data = await response.json();
+                optimizerOutput = data.choices[0].message.content;
+
+                outputArea.classList.remove('loading');
+                outputArea.textContent = optimizerOutput;
+                showToast('✅ 优化成功！', 'success');
+
+            } catch (err) {
+                outputArea.classList.remove('loading');
+                outputArea.innerHTML = `<span style="color: var(--accent-pink);">❌ 错误: ${err.message}</span>`;
+                showToast(`优化失败: ${err.message}`, 'error');
+            } finally {
+                optimizeBtn.disabled = false;
+                optimizeBtn.innerHTML = '✨ 优化 Prompt';
+            }
+        }
+
+        // ==================== 通用功能 ====================
+        function clearInput(inputId) {
+            document.getElementById(inputId).value = '';
+        }
+
+        function copyOutput(outputId) {
+            const output = outputId === 'jsonOutput' ? jsonOutput : optimizerOutput;
+            if (!output) {
                 showToast('没有可复制的内容', 'error');
                 return;
             }
-            navigator.clipboard.writeText(currentOutput).then(() => {
+            navigator.clipboard.writeText(output).then(() => {
                 showToast('✅ 已复制到剪贴板', 'success');
             }).catch(() => {
                 showToast('复制失败', 'error');
             });
         }
 
-        // 下载 JSON
-        function downloadJSON() {
-            if (!currentOutput) {
-                showToast('没有可下载的内容', 'error');
-                return;
-            }
-            const blob = new Blob([currentOutput], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `json-prompt-${selectedType}-${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('✅ 下载成功', 'success');
-        }
-
-        // 清空输入
-        function clearInput() {
-            document.getElementById('inputPrompt').value = '';
-        }
-
-        // 显示 Toast
-        function showToast(message, type = 'info') {
+        function showToast(message, type = 'info', showLink = false) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            if (showLink) {
+                toast.innerHTML = `${message} <span class="toast-link" onclick="navigateTo('settings')">去设置</span>`;
+            } else {
+                toast.textContent = message;
+            }
             toast.className = `toast ${type} show`;
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
 
-        // 本地存储
-        document.getElementById('apiKey').addEventListener('change', (e) => {
-            localStorage.setItem('api_key', e.target.value);
-        });
-
-        // 页面加载时恢复设置
+        // ==================== 初始化 ====================
         window.addEventListener('load', () => {
-            const savedKey = localStorage.getItem('api_key');
+            // 恢复配置
+            const config = getConfig();
+            document.getElementById('apiKey').value = config.apiKey;
+            document.getElementById('modelSelect').value = config.model;
 
-            if (savedKey) {
-                document.getElementById('apiKey').value = savedKey;
-            }
+            // 更新状态
+            updateConfigStatus();
         });
     </script>
 </body>
