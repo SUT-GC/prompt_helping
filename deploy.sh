@@ -1,27 +1,62 @@
 #!/bin/bash
-echo "开始自动部署..."
-cd /root/PromptHelp
-git pull origin main
-echo "代码拉取完成"
 
-# 创建虚拟环境（如果不存在）
-if [ ! -d "venv" ]; then
-    echo "创建虚拟环境..."
-    python3 -m venv venv
+# 宝塔 WebHook 自动部署脚本
+# 用于 GitHub push 到 main 分支时自动部署
+
+set -e
+
+# ==================== 配置 ====================
+
+PROJECT_DIR="/root/PromptHelp"
+LOG_FILE="$PROJECT_DIR/deploy.log"
+BRANCH="main"
+REPO_URL="https://github.com/SUT-GC/prompt_helping.git"
+
+# ==================== 日志函数 ====================
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+log_error() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [ERROR] $1" | tee -a "$LOG_FILE"
+}
+
+# ==================== 主流程 ====================
+
+log "========== 开始部署 =========="
+
+# 检查项目目录，不存在则 clone
+if [ ! -d "$PROJECT_DIR" ]; then
+    log "项目目录不存在，开始克隆..."
+    mkdir -p "$(dirname "$PROJECT_DIR")"
+    git clone "$REPO_URL" "$PROJECT_DIR"
 fi
 
-# 激活虚拟环境并安装依赖
-source venv/bin/activate
-pip install -r requirements.txt -q
-echo "依赖安装完成"
+# 进入项目目录
+cd "$PROJECT_DIR" || {
+    log_error "无法进入项目目录: $PROJECT_DIR"
+    exit 1
+}
 
-# 停止旧进程（如果存在）
-if [ -f server.pid ]; then
-    kill $(cat server.pid) 2>/dev/null
-    rm -f server.pid
+# 拉取最新代码
+log "拉取最新代码..."
+git fetch origin
+git reset --hard "origin/$BRANCH"
+
+# 停止旧服务
+log "停止旧服务..."
+if [ -x "$PROJECT_DIR/stop.sh" ]; then
+    "$PROJECT_DIR/stop.sh" || true
 fi
 
-# 启动服务
-./start.sh
-echo "服务已重启"
-echo "部署完成!"
+# 启动新服务
+log "启动服务..."
+if [ -x "$PROJECT_DIR/start.sh" ]; then
+    "$PROJECT_DIR/start.sh"
+    log "========== 部署完成 =========="
+    exit 0
+else
+    log_error "start.sh 不存在或不可执行"
+    exit 1
+fi

@@ -43,17 +43,6 @@ def load_prompts():
     print(f"\n  共加载 {len(PROMPTS)} 个 prompt 模板\n")
 
 
-# 静态文件路由
-@app.route('/')
-def index():
-    return send_from_directory(STATIC_DIR, 'index.html')
-
-
-@app.route('/<path:filename>')
-def static_files(filename):
-    return send_from_directory(STATIC_DIR, filename)
-
-
 # 健康检查
 @app.route('/health')
 def health():
@@ -115,6 +104,21 @@ def proxy(path):
         return jsonify({'error': 'Request timeout'}), 504
     except requests.exceptions.RequestException as e:
         return jsonify({'error': 'Proxy request failed', 'message': str(e)}), 500
+
+
+# 静态文件路由（放在最后，避免和其他路由冲突）
+@app.route('/')
+def index():
+    return send_from_directory(STATIC_DIR, 'index.html')
+
+
+@app.route('/<path:filename>')
+def static_files(filename):
+    # 检查文件是否存在
+    file_path = STATIC_DIR / filename
+    if file_path.exists() and file_path.is_file():
+        return send_from_directory(STATIC_DIR, filename)
+    return jsonify({'error': 'Not Found'}), 404
 
 
 if __name__ == '__main__':
