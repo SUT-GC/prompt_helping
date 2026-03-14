@@ -820,18 +820,38 @@
 
                 <div class="card">
                     <h3 class="card-title">🤖 模型配置</h3>
+                    
                     <div class="form-group">
-                        <label class="form-label">选择模型</label>
-                        <select class="form-input" id="modelSelect">
-                            <option value="doubao-seed-1-6-251015">豆包 Seed 1.6</option>
-                        </select>
+                        <label class="form-label">Base URL</label>
+                        <input
+                            type="url"
+                            class="form-input"
+                            id="baseUrl"
+                            placeholder="https://ark.cn-beijing.volces.com/api/v3"
+                        >
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">
+                            💡 兼容 OpenAI API 格式的服务地址，如豆包、OpenAI、Azure 等
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">模型名称</label>
+                        <input
+                            type="text"
+                            class="form-input"
+                            id="modelName"
+                            placeholder="doubao-seed-1-6-251015"
+                        >
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">
+                            💡 输入要使用的模型名称
+                        </p>
                     </div>
                 </div>
 
                 <div class="card">
                     <h3 class="card-title">🔑 API Key 配置</h3>
                     <div class="form-group">
-                        <label class="form-label">豆包 API Key</label>
+                        <label class="form-label">API Key</label>
                         <div class="input-group">
                             <input
                                 type="password"
@@ -1044,15 +1064,17 @@
         // ==================== 配置管理 ====================
         function getConfig() {
             return {
-                apiKey: localStorage.getItem('api_key') || '',
+                baseUrl: localStorage.getItem('base_url') || 'https://ark.cn-beijing.volces.com/api/v3',
                 model: localStorage.getItem('model') || 'doubao-seed-1-6-251015',
+                apiKey: localStorage.getItem('api_key') || '',
                 isConfigured: localStorage.getItem('api_configured') === 'true'
             };
         }
 
-        function saveConfig(apiKey, model) {
-            localStorage.setItem('api_key', apiKey);
+        function saveConfig(baseUrl, model, apiKey) {
+            localStorage.setItem('base_url', baseUrl);
             localStorage.setItem('model', model);
+            localStorage.setItem('api_key', apiKey);
         }
 
         function setConfigured(status) {
@@ -1122,9 +1144,20 @@
         }
 
         async function saveAndTestConfig() {
+            const baseUrl = document.getElementById('baseUrl').value.trim();
+            const modelName = document.getElementById('modelName').value.trim();
             const apiKey = document.getElementById('apiKey').value.trim();
-            const model = document.getElementById('modelSelect').value;
             const statusBadge = document.getElementById('apiStatus');
+
+            if (!baseUrl) {
+                showToast('请输入 Base URL', 'error');
+                return;
+            }
+            
+            if (!modelName) {
+                showToast('请输入模型名称', 'error');
+                return;
+            }
 
             if (!apiKey) {
                 showToast('请输入 API Key', 'error');
@@ -1132,7 +1165,7 @@
             }
 
             // 保存配置
-            saveConfig(apiKey, model);
+            saveConfig(baseUrl, modelName, apiKey);
 
             // 显示验证中状态
             statusBadge.className = 'status-badge pending';
@@ -1143,10 +1176,11 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
+                        'Authorization': `Bearer ${apiKey}`,
+                        'X-Base-URL': baseUrl
                     },
                     body: JSON.stringify({
-                        model: model,
+                        model: modelName,
                         max_tokens: 10,
                         messages: [{ role: 'user', content: 'Hi' }]
                     })
@@ -1163,7 +1197,7 @@
                 setConfigured('false');
                 statusBadge.className = 'status-badge error';
                 statusBadge.innerHTML = '<span>●</span> 验证失败';
-                showToast(`❌ API Key 验证失败: ${err.message}`, 'error');
+                showToast(`❌ 配置验证失败：${err.message}`, 'error');
             }
         }
 
@@ -1222,7 +1256,8 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${config.apiKey}`
+                        'Authorization': `Bearer ${config.apiKey}`,
+                        'X-Base-URL': config.baseUrl
                     },
                     body: JSON.stringify({
                         model: config.model,
@@ -1258,8 +1293,8 @@
 
             } catch (err) {
                 outputArea.classList.remove('loading');
-                outputArea.innerHTML = `<span style="color: var(--accent-pink);">❌ 错误: ${err.message}</span>`;
-                showToast(`转换失败: ${err.message}`, 'error');
+                outputArea.innerHTML = `<span style="color: var(--accent-pink);">❌ 错误：${err.message}</span>`;
+                showToast(`转换失败：${err.message}`, 'error');
             } finally {
                 convertBtn.disabled = false;
                 convertBtn.innerHTML = '✨ 转换为 JSON Prompt';
@@ -1356,7 +1391,8 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${config.apiKey}`
+                        'Authorization': `Bearer ${config.apiKey}`,
+                        'X-Base-URL': config.baseUrl
                     },
                     body: JSON.stringify({
                         model: config.model,
@@ -1385,8 +1421,8 @@
 
             } catch (err) {
                 outputArea.classList.remove('loading');
-                outputArea.innerHTML = `<span style="color: var(--accent-pink);">❌ 错误: ${err.message}</span>`;
-                showToast(`优化失败: ${err.message}`, 'error');
+                outputArea.innerHTML = `<span style="color: var(--accent-pink);">❌ 错误：${err.message}</span>`;
+                showToast(`优化失败：${err.message}`, 'error');
             } finally {
                 optimizeBtn.disabled = false;
                 optimizeBtn.innerHTML = '✨ 优化 Prompt';
@@ -1545,8 +1581,9 @@
         window.addEventListener('load', () => {
             // 恢复配置
             const config = getConfig();
+            document.getElementById('baseUrl').value = config.baseUrl;
+            document.getElementById('modelName').value = config.model;
             document.getElementById('apiKey').value = config.apiKey;
-            document.getElementById('modelSelect').value = config.model;
 
             // 更新状态
             updateConfigStatus();

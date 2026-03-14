@@ -11,7 +11,8 @@ from flask_cors import CORS
 
 # 配置
 PORT = int(os.environ.get('PORT', 8088))
-DOUBAO_API_URL = 'https://ark.cn-beijing.volces.com/api/v3'
+# 默认 Base URL（豆包 API）
+DEFAULT_BASE_URL = 'https://ark.cn-beijing.volces.com/api/v3'
 PROMPTS_DIR = Path(__file__).parent / 'prompts'
 STATIC_DIR = Path(__file__).parent
 
@@ -86,7 +87,9 @@ def proxy(path):
     if request.method == 'OPTIONS':
         return '', 204
 
-    target_url = f"{DOUBAO_API_URL}/{path}"
+    # 从请求头获取 Base URL，默认使用豆包 API
+    base_url = request.headers.get('X-Base-URL', DEFAULT_BASE_URL)
+    target_url = f"{base_url}/{path}"
 
     headers = {
         'Content-Type': 'application/json'
