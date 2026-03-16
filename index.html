@@ -815,11 +815,11 @@
             <div class="page" id="page-settings">
                 <div class="page-header">
                     <h1 class="page-title">设置</h1>
-                    <p class="page-desc">配置模型和 API Key，这些设置将应用于所有功能</p>
+                    <p class="page-desc">配置 LLM API 连接信息，这些设置将应用于所有功能</p>
                 </div>
 
                 <div class="card">
-                    <h3 class="card-title">🤖 模型配置</h3>
+                    <h3 class="card-title">🔑 API 配置</h3>
                     
                     <div class="form-group">
                         <label class="form-label">Base URL</label>
@@ -846,10 +846,7 @@
                             💡 输入要使用的模型名称
                         </p>
                     </div>
-                </div>
-
-                <div class="card">
-                    <h3 class="card-title">🔑 API Key 配置</h3>
+                    
                     <div class="form-group">
                         <label class="form-label">API Key</label>
                         <div class="input-group">
@@ -864,7 +861,8 @@
                             </button>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 16px;">
+                    
+                    <div style="display: flex; align-items: center; gap: 16px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);">
                         <button class="btn btn-primary" onclick="saveAndTestConfig()">
                             保存并验证
                         </button>
