@@ -1,0 +1,48 @@
+
+📂 正在加载 Prompt 模板...
+  ✓ 已加载 image prompt (1880 字符)
+  ✓ 已加载 infographic prompt (3286 字符)
+  ✓ 已加载 architecture prompt (3419 字符)
+  ✓ 已加载 optimizer_rtf prompt (772 字符)
+  ✓ 已加载 optimizer_costar prompt (1193 字符)
+  ✓ 已加载 optimizer_risen prompt (1356 字符)
+  ✓ 已加载 optimizer_crispe prompt (1457 字符)
+  ✓ 已加载 optimizer_roses prompt (1719 字符)
+
+  共加载 8 个 prompt 模板
+
+
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║   🚀 Prompt Studio Server (Flask)                          ║
+║                                                            ║
+║   Server:    http://localhost:8088                        ║
+║   Health:    http://localhost:8088/health                 ║
+║                                                            ║
+║   Prompts:   http://localhost:8088/prompts                ║
+║   API:       http://localhost:8088/v1/chat/completions    ║
+║                                                            ║
+║   Press Ctrl+C to stop                                     ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+    
+ * Serving Flask app 'server'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8088
+ * Running on http://10.200.4.22:8088
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [16/Mar/2026 16:34:52] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:34:59] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "GET /prompts HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "GET /prompts/image HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "GET /prompts/optimizer_rtf HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "[31m[1mPOST /v1/chat/completions HTTP/1.1[0m" 401 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "[31m[1mPOST /v1/chat/completions HTTP/1.1[0m" 401 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:36:13] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Mar/2026 16:38:44] "GET /health HTTP/1.1" 200 -
